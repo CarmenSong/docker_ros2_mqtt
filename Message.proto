@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package mesg;
+
+service Transfer {
+    rpc MsgTransfer (Message) returns (Reply) {}
+}
+
+message Message {
+    string body=1;
+}
+
+message Reply {
+    string msg_reply = 1;
+}
