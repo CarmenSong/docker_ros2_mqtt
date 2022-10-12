@@ -27,7 +27,8 @@ private:
         double linear_, angular_, l_scale_, a_scale_;
         rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr twist_pub_;
 };
-//initialization
+
+// initialization
 TeleopTurtle::TeleopTurtle(std::shared_ptr<rclcpp::Node> nh) : nh_(nh),
                                                                linear_(0),
                                                                angular_(0),
@@ -40,20 +41,10 @@ TeleopTurtle::TeleopTurtle(std::shared_ptr<rclcpp::Node> nh) : nh_(nh),
 int kfd = 0;
 struct termios cooked, raw;
 
-
-// void quit(int sig)
-// {
-//         (void)sig;
-//         tcsetattr(kfd, TCSANOW, &cooked);
-//         //   ros::shutdown();
-//         rclcpp::shutdown();
-//         exit(0);
-// }
-
 void turtlesim_manual()
 {
         //   ros::init(argc, argv, "teleop_turtle");
-        //rclcpp::init(argc, argv);
+        // rclcpp::init(argc, argv);
         auto node = rclcpp::Node::make_shared("teleop_turtle");
         TeleopTurtle teleop_turtle(node);
 
@@ -64,33 +55,16 @@ void turtlesim_manual()
 
 void TeleopTurtle::keyLoop()
 {
-        int c;
+
         bool dirty = false;
 
-        // get the console in raw mode
-        // tcgetattr(kfd, &cooked);
-        // memcpy(&raw, &cooked, sizeof(struct termios));
-        // raw.c_lflag &= ~(ICANON | ECHO);
-        // // Setting a new line, then end of file
-        // raw.c_cc[VEOL] = 1;
-        // raw.c_cc[VEOF] = 2;
-        // tcsetattr(kfd, TCSANOW, &raw);
-
-        // puts("Reading from keyboard");
-        // puts("---------------------------");
-        // puts("Use arrow keys to move the turtle.");
-
-        while (received_msg == "2")
+        while (true)
         {
-                // get the next event from the keyboard
-                // if (::read(kfd, &received_keyboard, 1) < 0)
-                // {
-                //         perror("read():");
-                //         exit(-1);
-                // }
-
                 linear_ = angular_ = 0;
                 // ROS_DEBUG("value: 0x%02X\n", c);
+                int c = std::stoi(received_keyboard);
+                std::cout << "hello world!" << std::endl;
+                std::cout << "c: " << c << std::endl;
 
                 switch (c)
                 {
@@ -127,6 +101,8 @@ void TeleopTurtle::keyLoop()
                         twist_pub_->publish(twist);
                         dirty = false;
                 }
+                if (c == 69)
+                        break;
         }
 
         return;
