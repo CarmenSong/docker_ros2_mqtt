@@ -23,7 +23,7 @@ namespace mesg
                 mosquitto_destroy(mosq);
                 return;
             }
-            std::cout << "Broker Connection Success" << std::endl;
+            // std::cout << "Broker Connection Success" << std::endl;
         }
 
         int pub_message(const std::string &m)
