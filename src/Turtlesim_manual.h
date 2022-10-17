@@ -63,8 +63,8 @@ void TeleopTurtle::keyLoop()
                 linear_ = angular_ = 0;
                 // ROS_DEBUG("value: 0x%02X\n", c);
                 int c = std::stoi(received_keyboard);
-                std::cout << "hello world!" << std::endl;
-                std::cout << "c: " << c << std::endl;
+                // std::cout << "hello world!" << std::endl;
+                // std::cout << "c: " << c << std::endl;
 
                 switch (c)
                 {
