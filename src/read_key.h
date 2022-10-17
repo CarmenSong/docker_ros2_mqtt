@@ -14,6 +14,7 @@ extern std::string received_msg;
 #define KEYCODE_U 0x41
 #define KEYCODE_D 0x42
 #define KEYCODE_Q 0x71
+#define KEYCODE_C 0x45
 
 void quit(int sig)
 {
@@ -24,11 +25,9 @@ void quit(int sig)
         exit(0);
 }
 
-std::string read_keyboard()
+void keyboard_init(void)
 {
         signal(SIGINT, quit);
-
-        char c;
 
         // get the console in raw mode
         tcgetattr(kfd, &cooked);
@@ -38,32 +37,46 @@ std::string read_keyboard()
         raw.c_cc[VEOL] = 1;
         raw.c_cc[VEOF] = 2;
         tcsetattr(kfd, TCSANOW, &raw);
+}
 
-        while (1)
+std::string read_keyboard()
+{
+        char c;
+        static std::string key;
+        // get the next event from the keyboard
+        if (::read(kfd, &c, 1) < 0)
         {
-                // get the next event from the keyboard
-                if (::read(kfd, &c, 1) < 0)
-                {
-                        perror("read():");
-                        exit(-1);
-                }
-
-                switch (c)
-                {
-                case KEYCODE_L:
-                        std::cout << "LEFT" << std::endl;
-                        break;
-                case KEYCODE_R:
-                        std::cout << "RIGHT" << std::endl;
-                        break;
-                case KEYCODE_U:
-                        std::cout << "UP" << std::endl;
-                        break;
-                case KEYCODE_D:
-                        std::cout << "DOWN" << std::endl;
-                        break;
-                }
+                perror("read():");
+                exit(-1);
         }
-        std::string key = std::to_string(c);
+
+        switch (c)
+        {
+        case KEYCODE_L:
+                std::cout << "TURN LEFT" << std::endl;
+                // std::cout << c << std::endl;
+                key = std::to_string(c);
+                break;
+        case KEYCODE_R:
+                std::cout << "TURN RIGHT" << std::endl;
+                key = std::to_string(c);
+                break;
+        case KEYCODE_U:
+                std::cout << "Forward" << std::endl;
+                key = std::to_string(c);
+                break;
+        case KEYCODE_D:
+                std::cout << "BACK" << std::endl;
+                key = std::to_string(c);
+                break;
+        case KEYCODE_C:
+                std::cout << "EXIT" << std::endl;
+                key = std::to_string(c);
+                break;
+        default:
+                break;
+        }
+
+        // std::string key = std::to_string(c);
         return key;
 }
