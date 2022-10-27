@@ -1,3 +1,6 @@
+#include "dynamiclibload.cpp"
+// #include "LogHandlerPub.h"
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
@@ -33,9 +36,8 @@ namespace mesg
     class MessageHandler
     {
     public:
-        MessageHandler(std::shared_ptr<Channel> channel)
-            : stub_(Transfer::NewStub(channel)) {}
-
+        MessageHandler() {};
+        
         void init() // mqtt initialization
         {
             // init publish struct
@@ -55,7 +57,6 @@ namespace mesg
 
             std::thread register_callback_thread(register_callback);
             register_callback_thread.detach();
-            // std::cout << "Finish" << std::endl;
 
             rc = mosquitto_connect(mosq, "localhost", 1883, 60);
             if (rc)
@@ -80,27 +81,44 @@ namespace mesg
         void call_back()
         {
             mosquitto_loop_start(mosq);
+            std::thread thrd2(mesg::check_lib_update, initial_dirctime, dirc_time);
+            // std::thread thrd3(log_libupdate);
             while (received_msg != "3")
             {
-                if (received_msg == "1")
+                if (received_msg == "1" || received_msg == "5")
                 {
-                    RunTurtle();
+                    // std::thread thrd1(mesg::loading_turtlesim_lib);
+                    // thrd1.join();
+                    std::thread thrd1(mesg::ifmsgequal5);
+                    mesg::loading_turtlesim_lib();
+                    thrd1.join();
                 }
+
                 if (received_msg == "2")
                 {
-                    while (received_keyboard != "69")
+                    while (received_keyboard != "69") // if key "E" exit
                     {
-                        // std::cout << "hello" << std::endl;
-                        turtlesim_manual();
+                        std::thread thrd1(turtlesim_manual);
+                        thrd1.join();
                     }
                 }
+
+                if (received_msg == "4")
+                {
+                    received_msg = "1";
+                }
+
             }
+            thrd2.join();
+            // thrd3.join();
             mosquitto_loop_stop(mosq, true);
             mosquitto_disconnect(mosq);
             mosquitto_destroy(mosq);
             mosquitto_lib_cleanup();
         }
 
+        // protected:
+        //     std::string received_msg;
     private:
         struct mosquitto *mosq;
         std::unique_ptr<Transfer::Stub> stub_;

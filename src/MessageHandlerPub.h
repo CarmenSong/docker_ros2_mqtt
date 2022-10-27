@@ -1,20 +1,34 @@
+#include "LogHandlerSub.h"
+
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
 
 namespace mesg
 {
-    static Message message;
+    static Message message_pub;
 
     class MessageHandlerPub
     {
     public:
-        MessageHandlerPub(std::shared_ptr<Channel> channel)
-            : stub_(Transfer::NewStub(channel)) {}
+        MessageHandlerPub() {}
+
+        void log_init()
+        {
+            mesg::LogHandlerSub log_handle_sub; // grpc channel
+
+            log_handle_sub.init(); // initialization of LogHandlerSub
+            log_handle_sub.rosnodelog_init();
+        }
 
         void init() // mqtt initialization
         {
             mosq = mosquitto_new("publisher-test", true, NULL);
+
+            // mesg::LogHandlerSub log_handle_sub; // grpc channel
+
+            // log_handle_sub.init(); // initialization of LogHandlerSub
+            // log_handle.log_call_back();
 
             rc = mosquitto_connect(mosq, "localhost", 1883, 60);
             if (rc != 0)
@@ -28,11 +42,11 @@ namespace mesg
 
         int pub_message(const std::string &m)
         {
-            Message message;
-            message.set_body(m);
+            Message message_pub;
+            message_pub.set_body(m);
 
             std::string message_string;
-            message.SerializeToString(&message_string); // Serializes the message and stroes in a given string
+            message_pub.SerializeToString(&message_string); // Serializes the message and stroes in a given string
             // here is message_string
             // std::cout <<  message_string << std::endl;
             mosquitto_publish(mosq, nullptr, mesg_pub_topic.c_str(),

@@ -61,33 +61,27 @@ void TeleopTurtle::keyLoop()
         while (true)
         {
                 linear_ = angular_ = 0;
-                // ROS_DEBUG("value: 0x%02X\n", c);
                 int c = std::stoi(received_keyboard);
-                // std::cout << "hello world!" << std::endl;
-                // std::cout << "c: " << c << std::endl;
 
                 switch (c)
                 {
                 case KEYCODE_L:
-                        std::cout << "LEFT" << std::endl;
+                        // std::cout << "LEFT" << std::endl;
                         angular_ = 1.0;
                         dirty = true;
                         break;
                 case KEYCODE_R:
-                        // ROS_DEBUG("RIGHT");
-                        std::cout << "RIGHT" << std::endl;
+                        // std::cout << "RIGHT" << std::endl;
                         angular_ = -1.0;
                         dirty = true;
                         break;
                 case KEYCODE_U:
-                        // ROS_DEBUG("UP");
-                        std::cout << "UP" << std::endl;
+                        // std::cout << "UP" << std::endl;
                         linear_ = 1.0;
                         dirty = true;
                         break;
                 case KEYCODE_D:
-                        // ROS_DEBUG("DOWN");
-                        std::cout << "DOWN" << std::endl;
+                        // std::cout << "DOWN" << std::endl;
                         linear_ = -1.0;
                         dirty = true;
                         break;

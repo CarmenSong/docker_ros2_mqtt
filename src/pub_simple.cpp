@@ -18,14 +18,13 @@ using grpc::Status;
 
 // using mesg::Reply;
 
-class mesg::MessageHandlerPub;
-
 int main(int argc, char *argv[])
 {
     static std::string key;
-    mesg::MessageHandlerPub handle(
-        grpc::CreateChannel("localhost:9515", grpc::InsecureChannelCredentials())); // grpc channel
+    mesg::MessageHandlerPub handle; // grpc channel
 
+    std::thread logthrd([&](){handle.log_init();});
+    
     mosquitto_lib_init();
     // handle.init();
 
@@ -33,7 +32,7 @@ int main(int argc, char *argv[])
     {
         handle.init();
 
-        std::cout << "1-automatic, 2-manual, 3-exit" << std::endl;
+        std::cout << "1-automatic, 2-manual, 3-exit, 4-reload_library" << std::endl;
         std::cin >> key;
         handle.pub_message(key);
         // if (key == "2")
@@ -52,6 +51,7 @@ int main(int argc, char *argv[])
                 break;
         }
     }
+    logthrd.join();
     // Optional:  Delete all global objects allocated by libprotobuf.
     google::protobuf::ShutdownProtobufLibrary();
 

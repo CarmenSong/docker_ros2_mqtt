@@ -9,7 +9,7 @@
 #include "Message.pb.h"
 #include "Message.grpc.pb.h"
 #include "mosquitto.h"
-#include "Turtlesim_auto.h"
+#include "Turtlesim_auto.cpp"
 #include "Turtlesim_manual.h"
 #include "MessageHandlerSub.h"
 
@@ -21,13 +21,10 @@ using grpc::Status;
 std::string received_msg;
 std::string received_keyboard;
 
-class mesg::MessageHandler;
-
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
-    mesg::MessageHandler handle(
-        grpc::CreateChannel("localhost:9515", grpc::InsecureChannelCredentials())); // grpc channel
+    mesg::MessageHandler handle; // grpc channel
 
     handle.init();
     handle.call_back();
