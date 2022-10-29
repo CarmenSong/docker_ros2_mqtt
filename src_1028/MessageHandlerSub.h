@@ -36,11 +36,14 @@ namespace mesg
     class MessageHandler
     {
     public:
-        MessageHandler() {};
-        
+        MessageHandler(){};
+
         void init() // mqtt initialization
         {
             // init publish struct
+            turtlestate.stateofturtle_pub_init();
+            turtlestate.stateofturtle_pubmsg("STATE: POWER ON [STOP]");
+
             mosq = mosquitto_new("subsrcibe-test", true, &id);
             mosquitto_connect_callback_set(mosq, on_connect);
             mosquitto_message_callback_set(mosq, on_message);
@@ -81,6 +84,9 @@ namespace mesg
         void call_back()
         {
             mosquitto_loop_start(mosq);
+            // turtlestate.stateofturtle_pub_init();
+            // turtlestate.stateofturtle_pubmsg("Stop");
+
             std::thread thrd2(mesg::check_lib_update, initial_dirctime, dirc_time);
             // std::thread thrd3(log_libupdate);
             while (received_msg != "3")
@@ -89,6 +95,8 @@ namespace mesg
                 {
                     // std::thread thrd1(mesg::loading_turtlesim_lib);
                     // thrd1.join();
+                    turtlestate.stateofturtle_pub_init();
+                    turtlestate.stateofturtle_pubmsg("STATE: POWER ON [AUTOMATIC]");
                     std::thread thrd1(mesg::ifmsgequal5);
                     mesg::loading_turtlesim_lib();
                     thrd1.join();
@@ -98,6 +106,8 @@ namespace mesg
                 {
                     while (received_keyboard != "69") // if key "E" exit
                     {
+                        turtlestate.stateofturtle_pub_init();
+                        turtlestate.stateofturtle_pubmsg("STATE: POWER ON [MANUAL]");
                         std::thread thrd1(turtlesim_manual);
                         thrd1.join();
                     }
@@ -105,9 +115,11 @@ namespace mesg
 
                 if (received_msg == "4")
                 {
+                    turtlestate.stateofturtle_pub_init();
+                    turtlestate.stateofturtle_pubmsg("STATE: POWER ON [RELOADING]");
+                    sleep(1);
                     received_msg = "1";
                 }
-
             }
             thrd2.join();
             // thrd3.join();
@@ -122,7 +134,7 @@ namespace mesg
     private:
         struct mosquitto *mosq;
         std::unique_ptr<Transfer::Stub> stub_;
-
+        mesg::stateofturtle_pub turtlestate;
         std::string _host;
         int id = 12;
         int rc;

@@ -1,41 +1,19 @@
 // #include "dynamiclibload.cpp"
 #include "spdlog/spdlog.h"
+// #include "spdlog/fmt/ostr.h"
+// #include "spdlog/sinks/stdout_sinks.h"
 
 namespace mesg
 {
     // mosquitto broker connection
     static Message log;
 
-    // void log_on_connect(struct mosquitto *mosq, void *obj, int rc)
-    // {
-    //     if (rc)
-    //     {
-    //         std::cout << "Error" << std::endl;
-    //         exit(-1);
-    //     }
-    //     mosquitto_subscribe(mosq, NULL, "MessageHandler/publish_log", 0);
-    // }
+    // extern auto console = spdlog::stdout_logger_mt("console");
 
-    // void roslog_on_connect(struct mosquitto *mosq, void *obj, int rc)
-    // {
-    //     if (rc)
-    //     {
-    //         std::cout << "Error" << std::endl;
-    //         exit(-1);
-    //     }
-    //     mosquitto_subscribe(mosq, NULL, "roslog", 0);
-    // }
-    // mosquitto data transformation
-    // void log_on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
-    // {
-    //     // std::cout << "From Topic" << msg->topic << std::endl;
-    //     log.ParseFromArray((const char *)msg->payload, msg->payloadlen);
-    // }
-
-    int rcvdecision_on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
+    int state_of_turtle(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
     {
         // std::cout << "From Topic" << msg->topic << std::endl;
-        log.ParseFromArray((const char *)msg->payload, msg->payloadlen);
+        spdlog::info((char *)msg->payload);
         return 0;
     }
 
@@ -52,24 +30,24 @@ namespace mesg
     public:
         LogHandlerSub() {}
 
-        void rcvdecision_init()
+        void stateofturtle_init()
         {
-            mosq_roslog = mosquitto_new("subscribe-test", true, &id);
+            mosq_stateofturtle = mosquitto_new("subscribe-test", true, &id);
 
-            rc = mosquitto_connect(mosq_roslog, "localhost", 1883, 10);
+            rc = mosquitto_connect(mosq_stateofturtle, "localhost", 1883, 10);
             if (rc)
             {
                 std::cout << "Connection Fail" << std::endl;
                 return;
             }
-            auto rcvdecision_register_callback = [=] { // subscribe data from broker
+            auto stateofturtle_callback = [=] { // subscribe data from broker
                 mosquitto_subscribe_callback(
-                    &rcvdecision_on_message, NULL, "rcvdecision", 0,
+                    &state_of_turtle, NULL, "roslog2", 0,
                     "localhost", 1883, NULL, 10, true,
                     NULL, NULL, NULL, NULL);
             };
 
-            std::thread rosnodelog_callback_thread(rcvdecision_register_callback);
+            std::thread rosnodelog_callback_thread(stateofturtle_callback);
             rosnodelog_callback_thread.detach();
         }
 
@@ -134,6 +112,7 @@ namespace mesg
     private:
         struct mosquitto *mosq_log;
         struct mosquitto *mosq_roslog;
+        struct mosquitto *mosq_stateofturtle;
         int id = 14;
         int rc;
         std::string mesg_pub_topic = "MessageHandler/publish_log";

@@ -26,6 +26,10 @@ int main(int argc, char **argv)
     rclcpp::init(argc, argv);
     mesg::MessageHandler handle; // grpc channel
 
+    // mesg::stateofturtle_pub turtlestate;
+    // turtlestate.stateofturtle_pub_init();
+    // turtlestate.stateofturtle_pubmsg("STOP");
+
     handle.init();
     handle.call_back();
 

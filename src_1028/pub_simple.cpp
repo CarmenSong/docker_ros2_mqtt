@@ -11,6 +11,9 @@
 #include "mosquitto.h"
 #include "MessageHandlerPub.h"
 #include "read_key.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/sinks/stdout_sinks.h"
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -20,32 +23,32 @@ using grpc::Status;
 
 int main(int argc, char *argv[])
 {
+
     static std::string key;
     mesg::MessageHandlerPub handle; // grpc channel
+    // auto console = spdlog::stdout_logger_mt("console");
+    std::thread logthrd([&]()
+                        { handle.log_init(); });
 
-    std::thread logthrd([&](){handle.log_init();});
-    
     mosquitto_lib_init();
     // handle.init();
+    spdlog::info("Turtle_State: POWER OFF");
 
     while (true)
     {
         handle.init();
+        std::cout << "1-automatic, 2-manual, 3-exit, 4-reload_library, 5-precheck" << std::endl;
 
-        std::cout << "1-automatic, 2-manual, 3-exit, 4-reload_library" << std::endl;
         std::cin >> key;
         handle.pub_message(key);
-        // if (key == "2")
-        // {
-        // keyboard_init();
-        // }
+
         while (key == "2")
         {
-            // std::cout << "hello world" << std::endl;
+            std::cout << "A-Forward, B-Back, C-Right, D-Left, E-Exit"<< std::endl;
+            // spdlog::info("A-Forward, B-Back, C-Right, D-Left, E-Exit");
             handle.init();
             std::string keyboard = read_keyboard();
             // std::cout << keyboard << std::endl;
-            // std::cout << "hello" << std::endl;
             handle.pub_message(keyboard);
             if (keyboard == "69")
                 break;

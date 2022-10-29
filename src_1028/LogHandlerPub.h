@@ -49,4 +49,42 @@ namespace mesg
         int rc;
         std::string mesg_pub_topic = "MessageHandler/publish_log";
     };
+
+    class stateofturtle_pub
+    {
+    public:
+        stateofturtle_pub()
+        {
+            mosquitto_lib_init();
+        }
+
+        void stateofturtle_pub_init()
+        {
+            mosq_stateofturtle = mosquitto_new("subsrcibe-test", true, NULL);
+            rc = mosquitto_connect(mosq_stateofturtle, "localhost", 1883, 60);
+            if (rc != 0)
+            {
+                std::cout << "Cannot connect to broker " << rc << std::endl;
+                mosquitto_destroy(mosq_stateofturtle);
+                return;
+            }
+        }
+
+        void stateofturtle_pubmsg(const std::string &m)
+        {
+            mosquitto_publish(mosq_stateofturtle, nullptr, "roslog2",
+                              sizeof(m),
+                              m.c_str(), 0, false);
+
+            mosquitto_disconnect(mosq_stateofturtle);
+            mosquitto_destroy(mosq_stateofturtle);
+            mosquitto_lib_cleanup();
+            return;
+        }
+
+    private:
+        struct mosquitto *mosq;
+        struct mosquitto *mosq_stateofturtle;
+        int rc;
+    };
 }

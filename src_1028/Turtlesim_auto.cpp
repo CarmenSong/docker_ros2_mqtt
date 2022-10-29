@@ -1,8 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include <geometry_msgs/msg/twist.hpp>
 #include "mosquitto.h"
-// #include "Message.pb.h"
-// #include "LogHandlerPub.h"
 
 extern std::string received_msg;
 
@@ -56,7 +54,7 @@ void RunTurtle()
         int count = 0;
         rpc::roslog_pub rosnode;
         rosnode.roslog_pub_init();
-        rosnode.roslog_pubmsg("Node msg publish success!"); 
+        rosnode.roslog_pubmsg("log msg from rosnode");
         // lib_management();
         // int Initial_Lib_Number = Lib_Container.size();
         // std::cout << "Initial Lib Number: " << Initial_Lib_Number << std::endl;

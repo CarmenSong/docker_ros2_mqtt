@@ -19,16 +19,12 @@ namespace mesg
 
             log_handle_sub.init(); // initialization of LogHandlerSub
             log_handle_sub.rosnodelog_init();
+            log_handle_sub.stateofturtle_init();
         }
 
         void init() // mqtt initialization
         {
             mosq = mosquitto_new("publisher-test", true, NULL);
-
-            // mesg::LogHandlerSub log_handle_sub; // grpc channel
-
-            // log_handle_sub.init(); // initialization of LogHandlerSub
-            // log_handle.log_call_back();
 
             rc = mosquitto_connect(mosq, "localhost", 1883, 60);
             if (rc != 0)

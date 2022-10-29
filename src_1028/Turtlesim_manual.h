@@ -85,6 +85,8 @@ void TeleopTurtle::keyLoop()
                         linear_ = -1.0;
                         dirty = true;
                         break;
+                default:
+                        break;
                 }
 
                 geometry_msgs::msg::Twist twist;
