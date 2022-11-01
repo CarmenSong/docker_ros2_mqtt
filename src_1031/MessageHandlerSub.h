@@ -1,4 +1,5 @@
 #include "dynamiclibload.cpp"
+// #include "RPCHandlerSub.h"
 // #include "LogHandlerPub.h"
 
 using grpc::Channel;
@@ -88,18 +89,21 @@ namespace mesg
             // turtlestate.stateofturtle_pubmsg("Stop");
 
             std::thread thrd2(mesg::check_lib_update, initial_dirctime, dirc_time);
+            std::thread rpccommond_thrd(mesg::ifmsgequal6);
+
             // std::thread thrd3(log_libupdate);
             while (received_msg != "3")
             {
-                if (received_msg == "1" || received_msg == "5")
+
+                if (received_msg == "1" ||  received_msg == "5" || received_msg == "6")
                 {
                     // std::thread thrd1(mesg::loading_turtlesim_lib);
                     // thrd1.join();
                     turtlestate.stateofturtle_pub_init();
                     turtlestate.stateofturtle_pubmsg("STATE: POWER ON [AUTOMATIC]");
-                    std::thread thrd1(mesg::ifmsgequal5);
+                    std::thread precheck_thrd(mesg::ifmsgequal5);
                     mesg::loading_turtlesim_lib();
-                    thrd1.join();
+                    precheck_thrd.join();
                 }
 
                 if (received_msg == "2")
@@ -120,8 +124,22 @@ namespace mesg
                     sleep(1);
                     received_msg = "1";
                 }
+
+                // if (received_msg == "6")
+                // {
+                //     RPCHandlerSub rpchandler;
+                //     std::thread rpc_thrd([&]()
+                //                          { rpchandler.init(); });
+                //     rpc_thrd.detach();
+                //     // rpchandler.init();
+                //     // rpchandler.call_back();
+                //     // received_msg = "0";
+                // }
             }
+
             thrd2.join();
+            rpccommond_thrd.join();
+
             // thrd3.join();
             mosquitto_loop_stop(mosq, true);
             mosquitto_disconnect(mosq);
