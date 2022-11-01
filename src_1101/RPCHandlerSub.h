@@ -1,6 +1,7 @@
 #include <stdlib.h>
+// #include "dynamiclibload.cpp"
 
-char* command_rcv;
+extern std::string received_msg;
 
 class RPCHandlerSub
 {
@@ -13,7 +14,7 @@ public:
                 auto register_callback = [=] { // subscribe data from broker
                         mosquitto_subscribe_callback(
                             &RPCHandlerSub::call_back_func, NULL,
-                            "test/t1", 0,
+                            "MessageHandler/publish", 0,
                             "localhost", 1883,
                             NULL, 10, true,
                             NULL, NULL,
@@ -35,21 +36,29 @@ public:
         static int call_back_func(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
         {
 
-                command_rcv = (char *)msg->payload;
-                int result = system(command_rcv);
-                // std::cout << command_rcv << std::endl;
+                // command_rcv = (char *)msg->payload;
+                while (received_msg != "3" )
+                {
+                        if (received_msg == "6")
+                        {
+                                int result = system("wget https://raw.githubusercontent.com/CarmenSong/TestGrpc/main/ros2_update_lib/libdlopenRos_update.so");
+                                received_msg = "1";
+                                // break;
+                        } 
+                        if (received_msg == "5")
+                        {
+                                mesg::updatedlib_precheck();
+                                received_msg = "1";
+                        }
+                        if (received_msg != "1")
+                        {
+                                break;
+                        }
+
+                }
                 return 0;
         }
         // exit the connection to broker
-        void call_back()
-        {
-                mosquitto_loop_start(mosq);
-                getchar();
-                mosquitto_loop_stop(mosq, true);
-                mosquitto_disconnect(mosq);
-                mosquitto_destroy(mosq);
-                mosquitto_lib_cleanup();
-        }
 
         // protected:
         //     std::string received_msg;

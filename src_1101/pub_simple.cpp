@@ -15,7 +15,7 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 #include "spdlog/sinks/stdout_sinks.h"
-#include "RPCHandlerPub.h"
+// #include "RPCHandlerPub.h"
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -56,10 +56,10 @@ int main(int argc, char *argv[])
                 break;
         }
 
-        if (key == "6")
-        {
-            rpc_commond();
-        }
+        // if (key == "6")
+        // {
+        //     rpc_commond();
+        // }
     }
     logthrd.join();
     // Optional:  Delete all global objects allocated by libprotobuf.

@@ -8,6 +8,7 @@
 #include <thread>
 #include <memory>
 #include <list>
+#include <stdlib.h>
 
 #include "dlfcn.h"
 #include "unistd.h"
@@ -16,7 +17,7 @@
 #include "geometry_msgs/msg/twist.hpp"
 #include "LogHandlerPub.h"
 #include "LogHandlerSub.h"
-#include "RPCHandlerSub.h"
+// #include "RPCHandlerSub.h"
 
 using std::this_thread::sleep_for;
 
@@ -87,7 +88,7 @@ namespace mesg
                 else
                 {
                         handle_pub.init();
-                        handle_pub.log_pub_message("Precheck Success! Press 4 to reload");
+                        handle_pub.log_pub_message("dlopen success");
                         sleep_for(std::chrono::milliseconds(500));
                 }
                 Moveturtle();
@@ -95,40 +96,50 @@ namespace mesg
                 return;
         }
 
-        void ifmsgequal5()
+        void download_lib()
         {
-                while (true)
-                {
-                        if (received_msg == "5")
-                        {
-                                std::cout << "hello msg_5" << std::endl;
-                                updatedlib_precheck();
-                                break;
-                        }
-                        else if(received_msg != "1" || received_msg != "6")
-                        {
-                                break;
-                        }
-
-                }
+                int result = system("wget https://raw.githubusercontent.com/CarmenSong/TestGrpc/main/ros2_update_lib/libdlopenRos_update.so");
+                
                 return;
         }
 
-        void ifmsgequal6()
+        void ifmsgequal5()
         {
                 while (received_msg != "3")
                 {
-                        if (received_msg == "6")
+                        if (received_msg == "5")
                         {
-                                RPCHandlerSub rpchandler;
-                                std::thread rpc_thrd([&]()
-                                                     { rpchandler.init(); });
-                                rpc_thrd.detach();
+                                // std::cout << "hello msg_5" << std::endl;
+                                updatedlib_precheck();
+                                received_msg = "1";
+                                break;
+                        }
+                        if (received_msg != "1")
+                        {
                                 break;
                         }
                 }
                 return;
         }
+
+        // void ifmsgequal6()
+        // {
+        //         while (received_msg != "3")
+        //         {
+        //                 if (received_msg == "6")
+        //                 {
+        //                         RPCHandlerSub rpchandler;
+        //                         std::thread rpc_thrd([&]()
+        //                                              { rpchandler.init(); });
+        //                         rpc_thrd.detach();
+        //                         // download_lib();
+        //                         received_msg = "1";
+        //                         break;
+        //                 }
+
+        //         }
+        //         return;
+        // }
 
         void loading_turtlesim_lib()
         {
