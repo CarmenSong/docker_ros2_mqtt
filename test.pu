@@ -1,0 +1,25 @@
+@startuml
+
+actor User
+
+User -> Operator : Input Mode Selection (1-6)
+activate Operator
+Operator -> MQTT: Publish mode selection to broker
+activate MQTT
+MQTT -> Robot_RPC: Subscribe published mode selection
+activate Robot_RPC
+Robot_RPC -> Robot : 1-automatic
+Robot_RPC -> Robot : 2-manual
+Robot_RPC -> MQTT : Publish robot state log info to broker
+MQTT -> Operator :  Subcribe robot state log info
+Robot_RPC -> MQTT : Publish Rosnode log info to broker
+MQTT -> Operator : Subcribe Rosbode log info
+Robot_RPC -> Cloud : 6-download library
+Robot_RPC -> Robot : 5-precheck
+Robot_RPC -> MQTT : Publish Dynamic-lib precheck log info to broker
+MQTT -> Operator: Sucribe Dynamic-lib precheck log info
+
+deactivate MQTT
+deactivate Operator
+deactivate Robot_RPC
+@enduml
